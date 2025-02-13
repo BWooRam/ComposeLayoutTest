@@ -22,12 +22,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+val koreanDays = listOf("일", "월", "화", "수", "목", "금", "토")
+val englishDays = listOf("M", "T", "W", "T", "F", "S", "S")
+val JapaneseDays = listOf("月", "火", "水", "木", "金", "土", "日")
+val ChineseDays = listOf("一", "二", "三", "四", "五", "六", "日")
+
 @Composable
 fun WeekdaySelector(
-    selectedDays: List<String>, onDaySelected: (String) -> Unit
+    days: List<String>,
+    selectedDays: List<String>,
+    onDaySelected: (String) -> Unit
 ) {
-    val days = listOf("일", "월", "화", "수", "목", "금", "토")
-
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(16.dp)
     ) {
@@ -54,7 +59,10 @@ fun WeekdaySelector(
 fun WeekdaySelectorScreen(onSelectedDay: (List<String>) -> Unit = {}) {
     var selectedDays by remember { mutableStateOf(listOf<String>()) }
 
-    WeekdaySelector(selectedDays) { day ->
+    WeekdaySelector(
+        days = koreanDays,
+        selectedDays = selectedDays
+    ) { day ->
         selectedDays = if (day in selectedDays) {
             selectedDays - day // 선택 해제
         } else {

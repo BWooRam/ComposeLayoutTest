@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,17 +23,27 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PasswordDotsInputField(password: String, onPasswordChange: (String) -> Unit) {
+fun PasswordDotsInputField(
+    password: String,
+    dotLength: Int,
+    onInputPassword: (String) -> Unit
+) {
     Box(
-        contentAlignment = Alignment.Center, modifier = Modifier
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
             .fillMaxWidth()
+            .height(100.dp)
             .padding(16.dp)
     ) {
         // 비밀번호 입력 UI (● 점 표시)
         Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center),
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            repeat(6) { index ->
+            repeat(dotLength) { index ->
                 Box(
                     modifier = Modifier
                         .size(16.dp) // 원 크기
@@ -45,12 +56,11 @@ fun PasswordDotsInputField(password: String, onPasswordChange: (String) -> Unit)
         // 실제 입력을 위한 TextField (투명 처리)
         BasicTextField(
             value = password,
-            onValueChange = { if (it.length <= 6) onPasswordChange(it) },
+            onValueChange = { if (it.length <= dotLength) onInputPassword(it) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp) // 사용자 입력 가능하도록 영역 확보
+                .fillMaxSize()
                 .alpha(0f) // 완전 투명하게 숨김
         )
     }
