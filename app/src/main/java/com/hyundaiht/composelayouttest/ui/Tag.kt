@@ -9,13 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -37,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -47,6 +51,8 @@ fun TagInputField(
     onCreatedTag: (String) -> Unit,
     onRemoveTag: (String) -> Unit,
     onClearTag: () -> Unit,
+    tagMaxSize: Int = 3,
+    tagMaxLength: Int = 20
 ) {
     var text by remember { mutableStateOf("") }
 
@@ -56,10 +62,6 @@ fun TagInputField(
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
-        Text(text = "그룹 이름", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-
-        Spacer(modifier = Modifier.height(8.dp))
-
         Box(
             modifier = Modifier
                 .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
@@ -74,9 +76,11 @@ fun TagInputField(
                 // 태그 리스트 (Chip 형태)
                 FlowRow(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
+                        .weight(1f)
+                        .defaultMinSize(minHeight = 40.dp)
                         .wrapContentHeight()
-                        .align(Alignment.CenterVertically),
+                        .align(Alignment.CenterVertically)
+                        .background(Color.Magenta),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -89,7 +93,7 @@ fun TagInputField(
                     if (tags.size < 3) {
                         BasicTextField(
                             value = text,
-                            onValueChange = { if (it.length <= 20) text = it },
+                            onValueChange = { if (it.length <= tagMaxLength) text = it },
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.CenterVertically),
@@ -97,7 +101,10 @@ fun TagInputField(
                                 imeAction = ImeAction.Done
                             ),
                             keyboardActions = KeyboardActions(onDone = {
-                                addTag(text, tags) { _ ->
+                                Log.d("TagInputField", "text = $text")
+                                val newTag = text.trim()
+                                if (newTag.isNotEmpty() && newTag !in tags && tags.size < tagMaxSize) {
+                                    Log.d("TagInputField", "onUpdate")
                                     onCreatedTag.invoke(text)
                                     text = ""
                                 }
@@ -107,22 +114,20 @@ fun TagInputField(
                     }
                 }
 
-                // X 버튼 (모든 태그 삭제)
-                IconButton(
-                    modifier = Modifier.size(40.dp, 40.dp),
-                    onClick = onClearTag
-                ) {
-                    Icon(Icons.Default.Close, contentDescription = "Clear tags")
+                if (tags.isNotEmpty()) {
+                    // X 버튼 (모든 태그 삭제)
+                    IconButton(
+                        modifier = Modifier
+                            .size(40.dp, 40.dp)
+                            .align(Alignment.CenterVertically)
+                            .background(Color.Cyan),
+                        onClick = onClearTag
+                    ) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "Clear tags")
+                    }
                 }
             }
         }
-    }
-}
-
-private fun addTag(input: String, tags: List<String>, onUpdate: (List<String>) -> Unit) {
-    val newTag = input.trim()
-    if (newTag.isNotEmpty() && newTag !in tags && tags.size < 3) {
-        onUpdate(tags + newTag)
     }
 }
 
@@ -137,13 +142,20 @@ fun InputAndSelectTagScreen() {
     Log.d("tag", "InputAndSelectTagScreen rememberWaitingGroupTag = $rememberWaitingGroupTag")
 
     Column {
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = "그룹 이름",
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         TagInputField(
             tags = rememberTargetGroupTag,
             onCreatedTag = {
                 Log.d("tag", "TagInputField onCreatedTag tag = $it")
                 rememberTargetGroupTag = rememberTargetGroupTag + it
 
-                if(rememberWaitingGroupTag.contains(it)){
+                if (rememberWaitingGroupTag.contains(it)) {
                     rememberWaitingGroupTag = rememberWaitingGroupTag - it
                 }
             },
@@ -151,7 +163,7 @@ fun InputAndSelectTagScreen() {
                 Log.d("tag", "TagInputField onRemoveTag tag = $it")
                 rememberTargetGroupTag = rememberTargetGroupTag - it
 
-                if(startGroupTag.contains(it) && !rememberWaitingGroupTag.contains(it)){
+                if (startGroupTag.contains(it) && !rememberWaitingGroupTag.contains(it)) {
                     rememberWaitingGroupTag = rememberWaitingGroupTag + it
                 }
             },

@@ -37,6 +37,8 @@ class CustomUiTestActivity : ComponentActivity() {
                             .padding(innerPadding)
                             .verticalScroll(state)
                     ) {
+                        //테스트 필요 - 회전, 생명주기 등..
+
                         //비밀번호 입력 UI
                         var rememberPassword by remember { mutableStateOf("") }
                         PasswordDotsInputField(
