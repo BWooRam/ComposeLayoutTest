@@ -59,6 +59,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hyundaiht.composelayouttest.ui.InputAndSelectTagScreen
+import com.hyundaiht.composelayouttest.ui.PasswordDotsInputField
 import com.hyundaiht.composelayouttest.ui.TagInputField
 import com.hyundaiht.composelayouttest.ui.WeekdaySelectorScreen
 import com.hyundaiht.composelayouttest.ui.theme.ComposeUiTestTheme
@@ -97,42 +98,5 @@ class CustomUiTestActivity : ComponentActivity() {
             }
         }
     }
-
-    @Composable
-    fun PasswordDotsInputField(password: String, onPasswordChange: (String) -> Unit) {
-        Box(
-            contentAlignment = Alignment.Center, modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            // 비밀번호 입력 UI (● 점 표시)
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                repeat(6) { index ->
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp) // 원 크기
-                            .clip(CircleShape)
-                            .background(if (index < password.length) Color.Gray else Color.LightGray)
-                    )
-                }
-            }
-
-            // 실제 입력을 위한 TextField (투명 처리)
-            BasicTextField(
-                value = password,
-                onValueChange = { if (it.length <= 6) onPasswordChange(it) },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.NumberPassword),
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp) // 사용자 입력 가능하도록 영역 확보
-                    .alpha(0f) // 완전 투명하게 숨김
-            )
-        }
-    }
-
-
 
 }
