@@ -40,11 +40,12 @@ class CustomUiTestActivity : ComponentActivity() {
                         var rememberPassword by remember { mutableStateOf("") }
                         PasswordDotsInputField(
                             password = rememberPassword,
-                            dotLength = 6
-                        ) {
-                            Log.d(tag, "PasswordDotsInput onPasswordChange password = $it")
-                            rememberPassword = it
-                        }
+                            dotLength = 6,
+                            onInputPassword = {
+                                Log.d(tag, "PasswordDotsInput onPasswordChange password = $it")
+                                rememberPassword = it
+                            }
+                        )
 
                         //요일 선택 UI
                         WeekdaySelectorScreen {

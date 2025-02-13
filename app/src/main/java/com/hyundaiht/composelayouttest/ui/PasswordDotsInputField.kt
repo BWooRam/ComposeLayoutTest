@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,19 +21,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun PasswordDotsInputField(
     password: String,
     dotLength: Int,
-    onInputPassword: (String) -> Unit
+    onInputPassword: (String) -> Unit,
+    dotSize: Dp = 16.dp,
+    dotSpaceBy: Dp = 12.dp,
+    defaultDotColor: Color = Color.LightGray,
+    activateDotColor: Color = Color.Gray,
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .wrapContentHeight()
             .padding(16.dp)
     ) {
         // 비밀번호 입력 UI (● 점 표시)
@@ -40,15 +46,15 @@ fun PasswordDotsInputField(
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.Center),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(dotSpaceBy, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
             repeat(dotLength) { index ->
                 Box(
                     modifier = Modifier
-                        .size(16.dp) // 원 크기
+                        .size(dotSize) // 원 크기
                         .clip(CircleShape)
-                        .background(if (index < password.length) Color.Gray else Color.LightGray)
+                        .background(if (index < password.length) activateDotColor else defaultDotColor)
                 )
             }
         }

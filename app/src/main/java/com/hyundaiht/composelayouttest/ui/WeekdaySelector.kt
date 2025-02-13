@@ -31,6 +31,8 @@ val ChineseDays = listOf("一", "二", "三", "四", "五", "六", "日")
 fun WeekdaySelector(
     days: List<String>,
     selectedDays: List<String>,
+    defaultColor: Color = Color.White,
+    selectedColor: Color = Color.Black,
     onDaySelected: (String) -> Unit
 ) {
     Row(
@@ -43,7 +45,7 @@ fun WeekdaySelector(
                     .size(40.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .border(2.dp, Color.Black, RoundedCornerShape(8.dp))
-                    .background(if (isSelected) Color.Black else Color.White)
+                    .background(if (isSelected) selectedColor else defaultColor)
                     .clickable { onDaySelected(day) }) {
                 Text(
                     text = day,
