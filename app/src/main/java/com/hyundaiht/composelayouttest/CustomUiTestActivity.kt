@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,14 +47,17 @@ class CustomUiTestActivity : ComponentActivity() {
                                 rememberPassword = it
                             }
                         )
+                        HorizontalDivider()
 
                         //요일 선택 UI
                         WeekdaySelectorScreen {
                             Log.d(tag, "WeekdaySelectorScreen onSelectedDay = $it")
                         }
+                        HorizontalDivider()
 
                         //태그 입력 UI
                         InputAndSelectTagScreen()
+                        HorizontalDivider()
                     }
                 }
             }
