@@ -39,6 +39,17 @@
             android:name=".AdaptiveLayoutActivity"
             android:exported="true"
             android:theme="@style/Theme.ComposeUiTest">
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+
+        <activity
+            android:name=".CustomUiTestActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ComposeUiTest">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
