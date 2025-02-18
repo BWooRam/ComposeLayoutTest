@@ -20,7 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+
 
 @Composable
 fun Chip(
@@ -36,14 +39,30 @@ fun Chip(
             .padding(horizontal = 12.dp, vertical = 4.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = { onClick?.invoke(text) }, modifier = Modifier.wrapContentSize()) {
-                Text(text = text, color = Color.White)
+            TextButton(
+                onClick = { onClick?.invoke(text) },
+                modifier = Modifier
+                    .wrapContentSize()
+                    .debugSemantics {
+                        contentDescription = "ChipOnClickButton"
+                    }) {
+                Text(
+                    modifier = Modifier.debugSemantics { contentDescription = "ChipText" },
+                    text = text,
+                    color = Color.White
+                )
             }
             Spacer(modifier = Modifier.width(4.dp))
 
             if (onRemove != null) {
-                IconButton(onClick = { onRemove.invoke(text) }, modifier = Modifier.size(16.dp)) {
-                    Icon(Icons.Default.Close, contentDescription = "Remove tag", tint = Color.White)
+                IconButton(
+                    onClick = { onRemove.invoke(text) },
+                    modifier = Modifier
+                        .size(16.dp)
+                        .debugSemantics {
+                            contentDescription = "ChipOnRemoveButton"
+                        }) {
+                    Icon(Icons.Default.Close, contentDescription = "ChipRemoveIcon", tint = Color.White)
                 }
             }
         }

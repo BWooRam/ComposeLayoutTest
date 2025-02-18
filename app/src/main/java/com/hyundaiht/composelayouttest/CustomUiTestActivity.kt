@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.hyundaiht.composelayouttest.ui.InputAndSelectTagScreen
 import com.hyundaiht.composelayouttest.ui.PasswordDotsInputField
+import com.hyundaiht.composelayouttest.ui.PasswordInputField2
 import com.hyundaiht.composelayouttest.ui.WeekdaySelectorScreen
 import com.hyundaiht.composelayouttest.ui.theme.ComposeUiTestTheme
 
@@ -39,7 +40,7 @@ class CustomUiTestActivity : ComponentActivity() {
                     ) {
                         //테스트 필요 - 회전, 생명주기 등..
 
-                        //비밀번호 입력 UI
+                        //비밀번호 입력 UI - 1
                         var rememberPassword by remember { mutableStateOf("") }
                         PasswordDotsInputField(
                             password = rememberPassword,
@@ -49,6 +50,16 @@ class CustomUiTestActivity : ComponentActivity() {
                                 rememberPassword = it
                             }
                         )
+                        HorizontalDivider()
+
+                        //비밀번호 입력 UI - 2
+                        PasswordInputField2(
+                            password = rememberPassword,
+                            dotLength = 6,
+                            onInputPassword = {
+                                Log.d(tag, "PasswordInputField2 onPasswordChange password = $it")
+                                rememberPassword = it
+                            })
                         HorizontalDivider()
 
                         //요일 선택 UI
