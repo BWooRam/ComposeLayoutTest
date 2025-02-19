@@ -19,8 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.Dp
@@ -42,13 +48,17 @@ fun PasswordDotsInputField(
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(16.dp)
+            .semantics {
+                role = Role.Image
+            }
     ) {
         // 비밀번호 입력 UI (● 점 표시)
         Row(
+
             modifier = Modifier
                 .fillMaxSize()
                 .align(Alignment.Center)
-                .debugSemantics {
+                .semantics {
                     contentDescription = "PasswordDotRow"
                 },
             horizontalArrangement = Arrangement.spacedBy(dotSpaceBy, Alignment.CenterHorizontally),
@@ -60,8 +70,9 @@ fun PasswordDotsInputField(
                         .size(dotSize) // 원 크기
                         .clip(CircleShape)
                         .background(if (index < password.length) activateDotColor else defaultDotColor)
-                        .debugSemantics {
-                            contentDescription = "PasswordDot$index"
+                        .testTag("PasswordDot$index")
+                        .semantics {
+                            stateDescription = if (index < password.length) "StateInput" else "StateNotInput"
                             onClick(label = "PasswordDotOnClick", action = { return@onClick false })
                         }
                 )
@@ -77,7 +88,7 @@ fun PasswordDotsInputField(
             modifier = Modifier
                 .fillMaxSize()
                 .alpha(0f) // 완전 투명하게 숨김
-                .debugSemantics {
+                .semantics {
                     contentDescription = "PasswordTextField"
                 },
             singleLine = true
@@ -112,7 +123,7 @@ fun PasswordInputField2(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .debugSemantics {
+                    .semantics {
                         contentDescription = "PasswordDotRow"
                     },
             ) {
@@ -123,7 +134,8 @@ fun PasswordInputField2(
                             .background(
                                 color = if (index < password.length) activateDotColor else defaultDotColor,
                                 shape = CircleShape
-                            ).debugSemantics {
+                            )
+                            .semantics {
                                 contentDescription = "PasswordDot$index"
                             },
                     )

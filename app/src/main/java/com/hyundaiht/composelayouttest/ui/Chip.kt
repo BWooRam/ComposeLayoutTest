@@ -43,11 +43,11 @@ fun Chip(
                 onClick = { onClick?.invoke(text) },
                 modifier = Modifier
                     .wrapContentSize()
-                    .debugSemantics {
+                    .semantics {
                         contentDescription = "ChipOnClickButton"
                     }) {
                 Text(
-                    modifier = Modifier.debugSemantics { contentDescription = "ChipText" },
+                    modifier = Modifier.semantics { contentDescription = "ChipText" },
                     text = text,
                     color = Color.White
                 )
@@ -59,7 +59,7 @@ fun Chip(
                     onClick = { onRemove.invoke(text) },
                     modifier = Modifier
                         .size(16.dp)
-                        .debugSemantics {
+                        .semantics {
                             contentDescription = "ChipOnRemoveButton"
                         }) {
                     Icon(Icons.Default.Close, contentDescription = "ChipRemoveIcon", tint = Color.White)
