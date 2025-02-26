@@ -2,6 +2,7 @@ package com.hyundaiht.composelayouttest.ui
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -35,8 +36,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -50,7 +59,8 @@ fun TagInputField(
     tagMaxSize: Int = 3,
     tagMaxLength: Int = 20
 ) {
-    var text by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    var textState by remember { mutableStateOf(TextFieldValue(text = "", selection = TextRange(0))) }
 
     Column(
         modifier = Modifier
@@ -87,21 +97,34 @@ fun TagInputField(
                     //입력 창 생성
                     if (tags.size < 3) {
                         BasicTextField(
-                            value = text,
-                            onValueChange = { if (it.length <= tagMaxLength) text = it },
+                            value = textState,
+                            onValueChange = { if (it.text.length <= tagMaxLength) textState = it },
                             modifier = Modifier
                                 .weight(1f)
-                                .align(Alignment.CenterVertically),
+                                .align(Alignment.CenterVertically)
+                                .onKeyEvent { keyEvent ->
+                                    if (keyEvent.type == KeyEventType.KeyUp && keyEvent.key == Key.Backspace) {
+                                        //Backspace 이벤트
+                                        if(textState.text.isEmpty() && tags.isNotEmpty()){
+                                            val lastTag = tags.last()
+                                            textState = TextFieldValue(lastTag, selection = TextRange(lastTag.length))
+                                            onRemoveTag.invoke(lastTag)
+                                        }
+                                        true
+                                    } else {
+                                        false
+                                    }
+                                },
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Done
                             ),
                             keyboardActions = KeyboardActions(onDone = {
-                                Log.d("TagInputField", "text = $text")
-                                val newTag = text.trim()
+                                Log.d("TagInputField", "text = ${textState.text}")
+                                val newTag = textState.text.trim()
                                 if (newTag.isNotEmpty() && newTag !in tags && tags.size < tagMaxSize) {
                                     Log.d("TagInputField", "onUpdate")
-                                    onCreatedTag.invoke(text)
-                                    text = ""
+                                    onCreatedTag.invoke(textState.text)
+                                    textState = TextFieldValue("")
                                 }
                             }),
                             singleLine = true
