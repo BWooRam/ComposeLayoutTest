@@ -49,14 +49,16 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TagInputField(
+    textFieldValue: TextFieldValue,
     tags: List<String>,
     onCreatedTag: (String) -> Unit,
     onRemoveTag: (String) -> Unit,
     onClearTag: () -> Unit,
+    onMoveBeforeTag: (String) -> Unit,
+    onInputText: (TextFieldValue) -> Unit,
     tagMaxSize: Int = 3,
     tagMaxLength: Int = 20
 ) {
-    var textState by remember { mutableStateOf(TextFieldValue(text = "", selection = TextRange(0))) }
 
     Column(
         modifier = Modifier
@@ -93,18 +95,17 @@ fun TagInputField(
                     //입력 창 생성
                     if (tags.size < 3) {
                         BasicTextField(
-                            value = textState,
-                            onValueChange = { if (it.text.length <= tagMaxLength) textState = it },
+                            value = textFieldValue,
+                            onValueChange = { onInputText.invoke(it) },
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.CenterVertically)
                                 .onKeyEvent { keyEvent ->
                                     if (keyEvent.type == KeyEventType.KeyUp && keyEvent.key == Key.Backspace) {
                                         //Backspace 이벤트
-                                        if(textState.text.isEmpty() && tags.isNotEmpty()){
-                                            val lastTag = tags.last()
-                                            textState = TextFieldValue(lastTag, selection = TextRange(lastTag.length))
-                                            onRemoveTag.invoke(lastTag)
+                                        if (textFieldValue.text.isEmpty() && tags.isNotEmpty()) {
+                                            Log.d("TagInputField", "Key Backspace")
+                                            onMoveBeforeTag.invoke(tags.last())
                                         }
                                         true
                                     } else {
@@ -115,12 +116,11 @@ fun TagInputField(
                                 imeAction = ImeAction.Done
                             ),
                             keyboardActions = KeyboardActions(onDone = {
-                                Log.d("TagInputField", "text = ${textState.text}")
-                                val newTag = textState.text.trim()
+                                Log.d("TagInputField", "text = ${textFieldValue.text}")
+                                val newTag = textFieldValue.text.trim()
                                 if (newTag.isNotEmpty() && newTag !in tags && tags.size < tagMaxSize) {
-                                    Log.d("TagInputField", "onUpdate")
-                                    onCreatedTag.invoke(textState.text)
-                                    textState = TextFieldValue("")
+                                    Log.d("TagInputField", "onUpdate textState = $textFieldValue")
+                                    onCreatedTag.invoke(textFieldValue.text)
                                 }
                             }),
                             singleLine = true
@@ -151,6 +151,14 @@ private val startGroupTag = listOf<String>("우리집")
 fun InputAndSelectTagScreen() {
     var rememberTargetGroupTag by remember { mutableStateOf(listOf<String>()) }
     var rememberWaitingGroupTag by remember { mutableStateOf(startGroupTag) }
+    var textState by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = "",
+                selection = TextRange(0)
+            )
+        )
+    }
     Log.d("tag", "InputAndSelectTagScreen rememberTargetGroupTag = $rememberTargetGroupTag")
     Log.d("tag", "InputAndSelectTagScreen rememberWaitingGroupTag = $rememberWaitingGroupTag")
 
@@ -163,7 +171,12 @@ fun InputAndSelectTagScreen() {
         )
         Spacer(modifier = Modifier.height(8.dp))
         TagInputField(
+            textFieldValue = textState,
             tags = rememberTargetGroupTag,
+            onInputText = {
+                Log.d("tag", "TagInputField onInputText text = $it")
+                textState = textState.copy(text = it.text, selection = it.selection)
+            },
             onCreatedTag = {
                 Log.d("tag", "TagInputField onCreatedTag tag = $it")
                 rememberTargetGroupTag = rememberTargetGroupTag + it
@@ -171,6 +184,7 @@ fun InputAndSelectTagScreen() {
                 if (rememberWaitingGroupTag.contains(it)) {
                     rememberWaitingGroupTag = rememberWaitingGroupTag - it
                 }
+                textState = textState.copy(text = "", selection = TextRange(0))
             },
             onRemoveTag = {
                 Log.d("tag", "TagInputField onRemoveTag tag = $it")
@@ -183,6 +197,15 @@ fun InputAndSelectTagScreen() {
             onClearTag = {
                 Log.d("tag", "TagInputField onClearTag")
                 rememberTargetGroupTag = listOf()
+            },
+            onMoveBeforeTag = {
+                Log.d("tag", "TagInputField onRemoveTag tag = $it")
+                rememberTargetGroupTag = rememberTargetGroupTag - it
+
+                if (startGroupTag.contains(it) && !rememberWaitingGroupTag.contains(it)) {
+                    rememberWaitingGroupTag = rememberWaitingGroupTag + it
+                }
+                textState = textState.copy(text = it, selection = TextRange(it.length))
             }
         )
         TagList(
