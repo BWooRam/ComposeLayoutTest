@@ -2,8 +2,6 @@ package com.hyundaiht.composelayouttest.ui
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +39,6 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -59,7 +56,6 @@ fun TagInputField(
     tagMaxSize: Int = 3,
     tagMaxLength: Int = 20
 ) {
-    val context = LocalContext.current
     var textState by remember { mutableStateOf(TextFieldValue(text = "", selection = TextRange(0))) }
 
     Column(
