@@ -96,7 +96,9 @@ fun TagInputField(
                     if (tags.size < 3) {
                         BasicTextField(
                             value = textFieldValue,
-                            onValueChange = { onInputText.invoke(it) },
+                            onValueChange = {
+                                if (it.text.length <= tagMaxLength) onInputText.invoke(it)
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .align(Alignment.CenterVertically)
